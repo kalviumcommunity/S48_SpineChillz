@@ -43,7 +43,6 @@ const Userdata = () => {
             // Map through users array and render user details as list items
             <li key={index}>
               <strong>Username:</strong> {user.username}<br />
-              <strong>Password:</strong> {user.password}<br />
               <strong>Age:</strong> {user.age}<br />
             </li>
           ))}
