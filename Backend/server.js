@@ -70,11 +70,10 @@ app.listen(port, () => {
 
 // Endpoint to add a new horror game
 app.post("/addGame", async (req, res) => {
-  const { title, genre, platforms, releaseYear, rating } = req.body;
+  const { title, genre, releaseYear, rating } = req.body;
   const newGame = new GameModel({
     title,
     genre,
-    platforms,
     releaseYear,
     rating,
   });
@@ -84,5 +83,38 @@ app.post("/addGame", async (req, res) => {
     res.status(201).send("Game added successfully");
   } catch (error) {
     res.status(500).json({ error: "Failed to add game" });
+  }
+});
+
+// Endpoint to update an existing horror game
+app.put("/updateGame/:id", async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const updatedGame = await GameModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+    if (!updatedGame) {
+      return res.status(404).send("Game not found");
+    }
+    res.json(updatedGame);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update game" });
+  }
+});
+
+// Endpoint to delete a horror game
+app.delete("/deleteGame/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedGame = await GameModel.findByIdAndDelete(id);
+    if (!deletedGame) {
+      return res.status(404).send("Game not found");
+    }
+    res.send("Game deleted successfully");
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete game" });
   }
 });

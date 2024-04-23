@@ -1,7 +1,7 @@
 import React from "react";
 
-function Signup() {
+function SignUp() {
   return <div>Signup</div>;
 }
 
-export default Signup;
+export default SignUp;
