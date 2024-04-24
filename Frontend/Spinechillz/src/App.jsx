@@ -10,6 +10,7 @@ import Signup from "./Components/SignUp.jsx";
 import Signin from "./Components/SignIn.jsx";
 import GamesPage from "./Components/GamesPage.jsx";
 import AddGame from "./Components/AddGameForm.jsx";
+import UpdateGames from "./Components/GameUpdateForm.jsx";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/signin" element={<Signin />} />
         <Route path="/games" element={<GamesPage />} />
         <Route path="/addgames" element={<AddGame />} />
+        <Route path="/updategames" element={<UpdateGames />} />
       </Routes>
     </BrowserRouter>
   );

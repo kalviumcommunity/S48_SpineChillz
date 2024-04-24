@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./AddGameForm.css";
 
 const AddGameForm = ({ onGameAdded }) => {
   const [formData, setFormData] = useState({
     title: "",
     genre: "",
-    platforms: "",
     releaseYear: "",
     rating: "",
   });
@@ -28,7 +28,6 @@ const AddGameForm = ({ onGameAdded }) => {
         setFormData({
           title: "",
           genre: "",
-          platforms: "",
           releaseYear: "",
           rating: "",
         }); // reset form
@@ -54,12 +53,6 @@ const AddGameForm = ({ onGameAdded }) => {
         onChange={handleInputChange}
         placeholder="Genre"
         required
-      />
-      <input
-        name="platforms"
-        value={formData.platforms}
-        onChange={handleInputChange}
-        placeholder="Platforms"
       />
       <input
         type="number"

@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import "./Navbar.css";
 
 const Navbar = ({ onSearchChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
