@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const joi = require("joi");
 
 // Initialize Express application
 const app = express();
@@ -116,5 +117,41 @@ app.delete("/deleteGame/:id", async (req, res) => {
     res.send("Game deleted successfully");
   } catch (error) {
     res.status(500).json({ error: "Failed to delete game" });
+  }
+});
+// joi schema for validating the user
+const userSchemaJoi = joi.object({
+  username: joi.string().alphanum().min(3).max(30).required(),
+  password: joi.string().min(5).required(),
+  age: joi.number().integer().min(13).required(), // Assuming the minimum age is 13
+});
+
+// Endpoint to register a new user
+
+app.post("/registerUser", async (req, res) => {
+  // Validate the user input
+  const { error } = userSchemaJoi.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
+  const { username, password, age } = req.body;
+
+  // Check if user already exists
+  const existingUser = await UserModel.findOne({ username });
+  if (existingUser) {
+    return res.status(409).json({ error: "Username already taken" });
+  }
+
+  // Create a new user
+  const newUser = new UserModel({
+    username,
+    password,
+    age,
+  });
+
+  try {
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to register user" });
   }
 });
