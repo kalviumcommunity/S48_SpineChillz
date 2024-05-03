@@ -5,7 +5,8 @@ const cors = require("cors");
 require("dotenv").config();
 const joi = require("joi");
 const bcrypt = require("bcryptjs");
-
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 // Initialize Express application
 const app = express();
 const port = 3000;
@@ -171,11 +172,17 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Setting the username in a cookie
-    res.cookie("username", username, {
+    const token = jwt.sign(
+      { userId: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    }); // Cookie expires in 1 day
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: "Server error" });
@@ -184,7 +191,7 @@ app.post("/login", async (req, res) => {
 
 // Logout endpoint
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("token");
   res.status(200).json({ message: "Logout successful" });
 });
 
