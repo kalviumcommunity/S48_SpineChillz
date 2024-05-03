@@ -4,14 +4,23 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const joi = require("joi");
+const bcrypt = require("bcryptjs");
 
 // Initialize Express application
 const app = express();
 const port = 3000;
 
-// Use middleware to parse JSON and enable CORS
+// Configure CORS options
+const corsOptions = {
+  origin: "http://localhost:5173", // This should match the URL of your frontend app
+  credentials: true, // This is crucial for cookies to be included in requests
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  optionsSuccessStatus: 200, // For legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+// Use middleware to parse JSON and enable CORS with the correct settings
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cors());
 
 // Connect to MongoDB
 mongoose
@@ -64,11 +73,6 @@ app.get("/users", async (req, res) => {
   }
 });
 
-// Start server and listen on specified port
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
-
 // Endpoint to add a new horror game
 app.post("/addGame", async (req, res) => {
   const { title, genre, releaseYear, rating } = req.body;
@@ -119,6 +123,7 @@ app.delete("/deleteGame/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete game" });
   }
 });
+
 // joi schema for validating the user
 const userSchemaJoi = joi.object({
   username: joi.string().alphanum().min(3).max(30).required(),
@@ -127,24 +132,20 @@ const userSchemaJoi = joi.object({
 });
 
 // Endpoint to register a new user
-
 app.post("/registerUser", async (req, res) => {
-  // Validate the user input
   const { error } = userSchemaJoi.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   const { username, password, age } = req.body;
-
-  // Check if user already exists
   const existingUser = await UserModel.findOne({ username });
   if (existingUser) {
     return res.status(409).json({ error: "Username already taken" });
   }
 
-  // Create a new user
+  const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new UserModel({
     username,
-    password,
+    password: hashedPassword,
     age,
   });
 
@@ -154,4 +155,40 @@ app.post("/registerUser", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to register user" });
   }
+});
+
+// Login endpoint
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Setting the username in a cookie
+    res.cookie("username", username, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    }); // Cookie expires in 1 day
+    res.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Logout endpoint
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.status(200).json({ message: "Logout successful" });
+});
+
+// Start server and listen on specified port
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
