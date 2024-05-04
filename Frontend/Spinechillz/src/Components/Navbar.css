@@ -1,0 +1,41 @@
+.navbardiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: black;
+  width: 100%;
+}
+
+.navbardiv h1 {
+  color: red;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.navbardiv input {
+  padding: 8px;
+  border: 2px solid red;
+  background: black;
+  color: red;
+  border-radius: 4px;
+  outline: none;
+}
+
+.navbardiv input::placeholder {
+  color: red;
+}
+
+.navbardiv button {
+  padding: 8px 16px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.navbardiv button:hover {
+  background-color: darkred;
+}

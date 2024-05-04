@@ -1,0 +1,11 @@
+.mainpagearea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.navbar,
+.add-game-form,
+.game-sheet {
+  width: 100%;
+}

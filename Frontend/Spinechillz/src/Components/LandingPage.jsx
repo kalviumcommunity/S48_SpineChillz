@@ -4,13 +4,13 @@ import "./LandingPage.css";
 
 const LandingPage = () => {
   return (
-    <div>
-      <h1>Spinechillz</h1>
+    <div className="landing-container">
+      <h1 className="landing-title">Spinechillz</h1>
       <Link to="/login">
-        <button>Log In</button>
+        <button className="landing-button">Log In</button>
       </Link>
       <Link to="/register">
-        <button>Register</button>
+        <button className="landing-button">Register</button>
       </Link>
     </div>
   );

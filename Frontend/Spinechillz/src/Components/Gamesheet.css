@@ -1,0 +1,49 @@
+.GameSheet {
+  background-color: black;
+  color: red;
+  padding: 20px;
+}
+
+.GameSheet h2 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.listbox {
+  list-style-type: none;
+  padding: 0;
+}
+
+.listitems {
+  border: 1px solid red;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.listitems strong {
+  color: white;
+  font-weight: bold;
+}
+
+.listitems button {
+  padding: 5px 10px;
+  margin-left: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.listitems button:hover {
+  background-color: darkred;
+}
+
+.GameSheet p {
+  color: white;
+  font-size: 1rem;
+}

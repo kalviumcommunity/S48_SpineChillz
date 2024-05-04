@@ -44,6 +44,7 @@ function Login() {
       />
       <button type="submit">Log In</button>
       {errorMessage && <p>{errorMessage}</p>}
+      navigate("/games");
     </form>
   );
 }
