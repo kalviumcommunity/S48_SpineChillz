@@ -1,0 +1,47 @@
+* {
+  background-color: rgba(0, 0, 0, 0.868);
+}
+.add-game-form {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: black;
+}
+
+.add-game-form label {
+  color: red;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.add-game-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid red;
+  background: black;
+  color: red;
+  border-radius: 4px;
+  outline: none;
+}
+
+.add-game-form input::placeholder {
+  color: red;
+}
+
+.add-game-form button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-game-form button:hover {
+  background-color: darkred;
+}

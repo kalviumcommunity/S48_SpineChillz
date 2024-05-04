@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import Logout from "./logout";
 import "./Navbar.css";
 
 const Navbar = ({ onSearchChange }) => {
@@ -15,16 +16,19 @@ const Navbar = ({ onSearchChange }) => {
   );
 
   return (
-    <div>
-      <h1>Spinechillz</h1>
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={handleSearchInputChange}
-        placeholder="Search games"
-        aria-label="Search games"
-      />
-    </div>
+    <>
+      <div className="navbardiv">
+        <h1>Spinechillz</h1>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchInputChange}
+          placeholder="Search games"
+          aria-label="Search games"
+        />
+        <Logout />
+      </div>
+    </>
   );
 };
 

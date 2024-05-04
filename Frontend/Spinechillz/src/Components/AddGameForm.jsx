@@ -39,7 +39,7 @@ const AddGameForm = ({ onGameAdded }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="add-game-form">
       <input
         name="title"
         value={formData.title}

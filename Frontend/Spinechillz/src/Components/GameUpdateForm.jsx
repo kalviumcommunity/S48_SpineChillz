@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import "./GameUpdateForm.css";
 
 const GameUpdateForm = () => {
   // Initialize form state with empty fields
@@ -55,8 +56,8 @@ const GameUpdateForm = () => {
   };
 
   return (
-    <div>
-      <h1>Update Game</h1>
+    <div className="gameupdateform">
+      <h1>Update Game </h1>
       <form onSubmit={handleSubmit}>
         <label>
           Title:

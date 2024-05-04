@@ -16,7 +16,6 @@ function Login() {
       )
       .then((response) => {
         console.log("Authentication successful:", response.data);
-        // Additional actions on success (e.g., redirect, state update)
       })
       .catch((error) => {
         console.error(
@@ -45,6 +44,7 @@ function Login() {
       />
       <button type="submit">Log In</button>
       {errorMessage && <p>{errorMessage}</p>}
+      navigate("/games");
     </form>
   );
 }
