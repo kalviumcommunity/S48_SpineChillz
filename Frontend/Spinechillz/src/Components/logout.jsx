@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-function Logout({ setAuth }) {
+function Logout() {
   const handleLogout = async () => {
     try {
       const res = await axios.post(
@@ -9,7 +9,6 @@ function Logout({ setAuth }) {
         {},
         { withCredentials: true }
       );
-      setAuth(false);
       alert(res.data.message);
     } catch (err) {
       alert("Failed to logout");

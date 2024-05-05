@@ -44,6 +44,9 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   age: Number,
+  recommendations: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "horrorgames" },
+  ],
 });
 const UserModel = mongoose.model("users", userSchema);
 
@@ -193,6 +196,36 @@ app.post("/login", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logout successful" });
+});
+
+// Endpoint to add a game to the user's recommendations
+app.post("/addRecommendation/:userId/:gameId", async (req, res) => {
+  const { userId, gameId } = req.params;
+  try {
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { recommendations: gameId } }, // Use $addToSet to avoid duplicates
+      { new: true }
+    );
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add recommendation" });
+  }
+});
+
+// Endpoint to fetch recommendations for a user
+app.get("/userRecommendations/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await UserModel.findById(userId).populate("recommendations");
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+    } else {
+      res.status(200).json(user.recommendations);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch recommendations" });
+  }
 });
 
 // Start server and listen on specified port
