@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./authform.css";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -16,6 +19,7 @@ function Login() {
       )
       .then((response) => {
         console.log("Authentication successful:", response.data);
+        navigate("/games");
       })
       .catch((error) => {
         console.error(
@@ -27,7 +31,7 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleLogin} className="logform">
       <input
         type="text"
         value={username}
@@ -44,7 +48,6 @@ function Login() {
       />
       <button type="submit">Log In</button>
       {errorMessage && <p>{errorMessage}</p>}
-      navigate("/games");
     </form>
   );
 }

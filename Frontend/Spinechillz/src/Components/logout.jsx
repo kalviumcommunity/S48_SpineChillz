@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 function Logout({ setAuth }) {
+  const navigate = useNavigate();
   const handleLogout = async () => {
     try {
       const res = await axios.post(
@@ -9,8 +10,8 @@ function Logout({ setAuth }) {
         {},
         { withCredentials: true }
       );
-      setAuth(false);
       alert(res.data.message);
+      navigate("/");
     } catch (err) {
       alert("Failed to logout");
     }

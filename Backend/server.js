@@ -13,15 +13,21 @@ const port = 3000;
 
 // Configure CORS options
 const corsOptions = {
-  origin: "http://localhost:5173", // This should match the URL of your frontend app
-  credentials: true, // This is crucial for cookies to be included in requests
+  origin: "http://localhost:5173",
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
-  optionsSuccessStatus: 200, // For legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 
 // Use middleware to parse JSON and enable CORS with the correct settings
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // Connect to MongoDB
 mongoose
