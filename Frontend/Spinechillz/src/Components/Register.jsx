@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import "./authform.css";
+import { useNavigate } from "react-router-dom";
 function Register() {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     username: "",
     password: "",
@@ -21,13 +23,14 @@ function Register() {
       );
       alert("Registration Successful");
       console.log(response.data);
+      navigate("/login");
     } catch (error) {
       alert(error.response.data);
     }
   };
 
   return (
-    <div>
+    <div className="regform">
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <input
