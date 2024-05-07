@@ -1,4 +1,4 @@
-// Import necessary modules
+// Importing required modules
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,51 +7,56 @@ const joi = require("joi");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-// Initialize Express application
+
+// Initializing the express application
 const app = express();
 const port = 3000;
 
-// Configure CORS options
-const corsOptions = {
-  origin: "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  optionsSuccessStatus: 200,
-};
-
-// Use middleware to parse JSON and enable CORS with the correct settings
-app.use(cors(corsOptions));
-app.use(express.json());
+// Middleware setup to handle CORS, JSON parsing, and cookie parsing
 app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    optionsSuccessStatus: 200,
   })
 );
+app.use(express.json());
+app.use(cookieParser());
 
-// Connect to MongoDB
+// MongoDB connection setup using environment variable for URI
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
-// Define schema and model for horror games
+// Defining schemas and models for MongoDB documents
 const gameSchema = new mongoose.Schema({
   title: String,
   genre: String,
-  platforms: String,
   releaseYear: Number,
   rating: Number,
+  added_by: String,
 });
 const GameModel = mongoose.model("horrorgames", gameSchema);
 
-// Define schema and model for users
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   age: Number,
 });
 const UserModel = mongoose.model("users", userSchema);
+
+// Middleware to log incoming requests
+app.use((req, res, next) => {
+  console.log(
+    `${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`
+  );
+  next();
+});
 
 // Endpoint to check MongoDB connection status
 app.get("/mongo", (req, res) => {
@@ -60,7 +65,7 @@ app.get("/mongo", (req, res) => {
   res.send(`Database Connection Status: ${connectionStatus}`);
 });
 
-// Endpoint to fetch all horror games
+// Endpoint to retrieve all games in the database
 app.get("/horrorGamesData", async (req, res) => {
   try {
     const games = await GameModel.find();
@@ -70,7 +75,7 @@ app.get("/horrorGamesData", async (req, res) => {
   }
 });
 
-// Endpoint to fetch all users
+// Endpoint to retrieve all users
 app.get("/users", async (req, res) => {
   try {
     const users = await UserModel.find();
@@ -80,29 +85,29 @@ app.get("/users", async (req, res) => {
   }
 });
 
-// Endpoint to add a new horror game
+// Endpoint to add a new game to the database
 app.post("/addGame", async (req, res) => {
-  const { title, genre, releaseYear, rating } = req.body;
+  const { title, genre, releaseYear, rating, added_by } = req.body;
   const newGame = new GameModel({
     title,
     genre,
     releaseYear,
     rating,
+    added_by,
   });
-
   try {
     await newGame.save();
-    res.status(201).send("Game added successfully");
+    res.status(201).json({ message: "Game added successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to add game" });
+    console.error("Failed to add game:", error);
+    res.status(500).json({ error: "Failed to add game: " + error.message });
   }
 });
 
-// Endpoint to update an existing horror game
+// Endpoint to update a game based on ID
 app.put("/updateGame/:id", async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-
   try {
     const updatedGame = await GameModel.findByIdAndUpdate(id, updateData, {
       new: true,
@@ -116,10 +121,9 @@ app.put("/updateGame/:id", async (req, res) => {
   }
 });
 
-// Endpoint to delete a horror game
+// Endpoint to delete a game based on ID
 app.delete("/deleteGame/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
     const deletedGame = await GameModel.findByIdAndDelete(id);
     if (!deletedGame) {
@@ -131,11 +135,11 @@ app.delete("/deleteGame/:id", async (req, res) => {
   }
 });
 
-// joi schema for validating the user
+// Joi schema for validating user registration
 const userSchemaJoi = joi.object({
   username: joi.string().alphanum().min(3).max(30).required(),
   password: joi.string().min(5).required(),
-  age: joi.number().integer().min(13).required(), // Assuming the minimum age is 13
+  age: joi.number().integer().min(13).required(),
 });
 
 // Endpoint to register a new user
@@ -150,12 +154,7 @@ app.post("/registerUser", async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = new UserModel({
-    username,
-    password: hashedPassword,
-    age,
-  });
-
+  const newUser = new UserModel({ username, password: hashedPassword, age });
   try {
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -164,7 +163,7 @@ app.post("/registerUser", async (req, res) => {
   }
 });
 
-// Login endpoint
+// Endpoint for user login
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -183,25 +182,35 @@ app.post("/login", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
-
+    res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Logout endpoint
+// Endpoint for user logout
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logout successful" });
 });
 
-// Start server and listen on specified port
+// Endpoint to get games added by a specific user
+app.get("/gamesByUser/:username", async (req, res) => {
+  const { username } = req.params;
+  try {
+    const games = await GameModel.find({ added_by: username });
+    if (games.length === 0) {
+      return res.status(404).json({ message: "No games found for this user." });
+    }
+    res.json(games);
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Server start
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });

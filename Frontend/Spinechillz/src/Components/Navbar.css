@@ -1,3 +1,4 @@
+/*styling for navbardiv*/
 .navbardiv {
   display: flex;
   align-items: center;
@@ -38,4 +39,29 @@
 
 .navbardiv button:hover {
   background-color: darkred;
+}
+
+/* Styling for dropdown container */
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-container select {
+  padding: 8px;
+  background-color: black;
+  color: red;
+  border: 2px solid red;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.dropdown-container select:focus {
+  border-color: white;
+}
+
+.dropdown-container option {
+  background-color: black;
+  color: red;
+  border: none;
 }

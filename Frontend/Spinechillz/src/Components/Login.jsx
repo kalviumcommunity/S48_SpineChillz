@@ -19,6 +19,7 @@ function Login() {
       )
       .then((response) => {
         console.log("Authentication successful:", response.data);
+        sessionStorage.setItem("username", username);
         navigate("/games");
       })
       .catch((error) => {
