@@ -11,6 +11,7 @@ function Logout({ setAuth }) {
         { withCredentials: true }
       );
       alert(res.data.message);
+      sessionStorage.clear();
       navigate("/");
     } catch (err) {
       alert("Failed to logout");

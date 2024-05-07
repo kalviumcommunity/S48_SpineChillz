@@ -12,6 +12,7 @@ import UpdateGames from "./Components/GameUpdateForm.jsx";
 import Login from "./Components/Login.jsx";
 import Logout from "./Components/logout.jsx";
 import Register from "./Components/Register.jsx";
+
 const App = () => {
   return (
     <BrowserRouter>

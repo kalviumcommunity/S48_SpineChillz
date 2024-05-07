@@ -14,7 +14,6 @@ const GamesPage = () => {
     <div className="mainpagearea">
       <Navbar onSearchChange={handleSearchChange} />
       <AddGame />
-
       <GameSheet searchTerm={searchTerm} />
     </div>
   );

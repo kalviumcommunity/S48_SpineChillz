@@ -16,7 +16,6 @@ const GameUpdateForm = () => {
   const navigate = useNavigate(); // Access the navigation function
   const gameId = location.state?.gameId; // Extract game ID from the route state
 
-  // Fetch game data for editing on component mount
   useEffect(() => {
     if (gameId) {
       axios

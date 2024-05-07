@@ -3,6 +3,7 @@ import axios from "axios";
 import "./AddGameForm.css";
 
 const AddGameForm = ({ onGameAdded }) => {
+  // State for form fields except for added_by
   const [formData, setFormData] = useState({
     title: "",
     genre: "",
@@ -10,32 +11,60 @@ const AddGameForm = ({ onGameAdded }) => {
     rating: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Handler for input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Handler for form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:3000/addGame", formData)
-      .then((response) => {
-        alert("Game added successfully!");
-        onGameAdded(formData); // callback to parent to update the list
-        setFormData({
-          title: "",
-          genre: "",
-          releaseYear: "",
-          rating: "",
-        }); // reset form
-      })
-      .catch((error) => {
-        console.error("Error adding game:", error);
-        alert("Failed to add game");
-      });
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    // Retrieve username from session storage at the time of submission
+    const added_by = sessionStorage.getItem("username");
+    if (!added_by) {
+      setErrorMessage("User is not logged in. Please log in to add a game.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.title || !formData.genre) {
+      setErrorMessage("Title and genre are required.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Combine formData with the added_by field
+    const completeFormData = { ...formData, added_by };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/addGame",
+        completeFormData,
+        {
+          withCredentials: true,
+        }
+      );
+      alert("Game added successfully!");
+      if (onGameAdded) onGameAdded();
+      setFormData({ title: "", genre: "", releaseYear: "", rating: "" }); // Reset form
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Error adding game:", error);
+      setErrorMessage(
+        "Failed to add game: " + (error.response?.data?.error || "Server error")
+      );
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -68,7 +97,10 @@ const AddGameForm = ({ onGameAdded }) => {
         onChange={handleInputChange}
         placeholder="Rating"
       />
-      <button type="submit">Add Game</button>
+      <button type="submit" disabled={isSubmitting}>
+        Add Game
+      </button>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
     </form>
   );
 };

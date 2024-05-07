@@ -3,17 +3,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Gamesheet.css";
 
-const GameSheet = ({ searchTerm = "" }) => {
-  // State to store the list of games
+const GameSheet = ({ searchTerm = "", userId }) => {
   const [games, setGames] = useState([]);
-  const navigate = useNavigate(); // Hook to perform navigation
+  const navigate = useNavigate();
 
-  // Effect to fetch games on component mount
   useEffect(() => {
     fetchGames();
   }, []);
 
-  // Function to fetch games from the server
   const fetchGames = () => {
     axios
       .get("http://localhost:3000/horrorGamesData")
@@ -21,25 +18,25 @@ const GameSheet = ({ searchTerm = "" }) => {
       .catch((error) => console.error("Error fetching games data:", error));
   };
 
-  // Function to delete a game and refresh the list
   const handleDelete = (id) => {
     axios
       .delete(`http://localhost:3000/deleteGame/${id}`)
       .then(() => {
         alert("Game deleted successfully");
-        fetchGames(); // Re-fetch games after a deletion
+        fetchGames();
       })
       .catch((error) => alert("Error deleting game:", error));
   };
 
-  // Function to navigate to the update form with game ID
   const handleUpdate = (id) => {
     navigate(`/updategames`, { state: { gameId: id } });
   };
 
-  // Filtering games based on search term
-  const filteredGames = games.filter((game) =>
-    game?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredGames = games.filter(
+    (game) =>
+      game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (game.added_by &&
+        game.added_by.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
